@@ -1,2 +1,2 @@
 # vmware
-Placeholder for vmware automation &amp; testing scripts
+Placeholder for vmware automation and testing scripts
