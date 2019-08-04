@@ -1,0 +1,30 @@
+---
+- name: Create a New VM from an existing template
+  hosts: localhost
+  gather_facts: no
+  vars_prompt:
+    - name: "vcsa_user"
+      prompt: "Enter vcenter username"
+      private: no
+    - name: "vcsa_passwd"
+      prompt: "Enter vcenter password"
+      private: yes
+  vars:
+   vcenter_host: '192.168.109.20'
+   virtual_datacenter: 'BLR-DC01'
+   cluster: 'Mgmt-Cluster'
+   vm_folder: 'Infra-VM'
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: "{{ vcenter_host }}"
+      username: "{{ vcsa_user }}"
+      password: "{{ vcsa_passwd }}"
+      validate_certs: False
+      name: cent06-test01
+      template: Cent6-Minimal
+      datacenter: "{{ virtual_datacenter }}"
+      cluster: "{{ cluster }}"
+      folder: "{{ vm_folder }}"
+      state: poweredon
+      wait_for_ip_address: no

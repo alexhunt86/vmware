@@ -1,0 +1,25 @@
+---
+- name: Create a New VM from a template
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  vars:
+    hostname: '192.168.109.20'
+    username: 'vcadmin@alex'
+    password: 'Telstra@123'
+    datacenter: 'BLR-DC01'
+    cluster: 'Mgmt-Cluster'
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: "{{ hostname }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      validate_certs: False
+      name: cent06-test01
+      template: Cent6-Minimal
+      datacenter: "{{ datacenter }}"
+      folder: /Infra-VM's
+      state: poweredon
+      cluster: "{{ cluster }}"
+      wait_for_ip_address: yes
