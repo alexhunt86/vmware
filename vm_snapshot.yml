@@ -1,0 +1,35 @@
+---
+    - name: "Take snaphot of an existing vm"
+      hosts: localhost
+      gather_facts: yes
+      vars_prompt:
+             - name: "vcenter_host"
+               prompt: "Enter vcenter server IP or FQDN"
+               private: no
+             - name: "vcsa_user"
+               prompt: "Enter vcenter username"
+               private: no
+             - name: "vcsa_passwd"
+               prompt: "Enter vcenter password"
+               private: yes
+             - name: "VM_Name"
+               prompt: "Enter name of the vm which needs to be snapshotted"
+               private: no  
+      vars:
+              datacenter: 'BLR-DC01'
+              folder: 'Infra-VM'
+      tasks:
+            - name: take snapshot of an existing vm
+              vmware_guest_snapshot:
+               hostname: "{{ vcenter_host }}"
+               username: "{{ vcsa_user }}"
+               password: "{{ vcsa_passwd }}"
+               validate_certs: False
+               datacenter: "{{ datacenter }}"
+               folder: "{{ folder }}"
+               name: "{{ VM_Name }}"
+               memory_dump: False
+               quiesce : True
+               snapshot_name: Before testing
+               state: present
+

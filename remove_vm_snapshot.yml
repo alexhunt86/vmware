@@ -1,0 +1,33 @@
+---
+    - name: "Delete snaphot of an existing vm"
+      hosts: localhost
+      gather_facts: no
+      vars_prompt:
+             - name: "vcenter_host"
+               prompt: "Enter vcenter server IP or FQDN"
+               private: no
+             - name: "vcsa_user"
+               prompt: "Enter vcenter username"
+               private: no
+             - name: "vcsa_passwd"
+               prompt: "Enter vcenter password"
+               private: yes
+             - name: "VM_Name"
+               prompt: "Enter name of the vm whose snapshot needs to be deleted"
+               private: no  
+      vars:
+              datacenter: 'BLR-DC01'
+              folder: 'Infra-VM'
+      tasks:
+            - name: Delete snapshot of an existing vm
+              vmware_guest_snapshot:
+               hostname: "{{ vcenter_host }}"
+               username: "{{ vcsa_user }}"
+               password: "{{ vcsa_passwd }}"
+               validate_certs: False
+               datacenter: "{{ datacenter }}"
+               folder: "{{ folder }}"
+               name: "{{ VM_Name }}"
+               snapshot_name: 'Before testing'
+               state: absent
+
