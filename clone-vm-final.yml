@@ -1,0 +1,59 @@
+---
+- name: Create a New VM from an existing template
+  hosts: localhost
+  gather_facts: no
+  vars_prompt:
+    - name: "vcenter_host"
+      prompt: "Enter vcenter server name"
+      private: no
+    - name: "vcsa_user"
+      prompt: "Enter vCenter username"
+      private: no
+    - name: "vcsa_passwd"
+      prompt: "Enter vcenter password"
+      private: yes
+    - name: "vm_name"
+      prompt: "Enter name for the cloned vm"
+      private: no
+    - name: "VM_Mem"
+      prompt: "Enter amount of memory for vm in mb"
+      private: no  
+    - name: "VM_CPU"
+      prompt: "Provide nuber of vCPU for the cloned vm"
+      private: no  
+  vars:
+   vcenter_host: '192.168.109.20'
+   virtual_datacenter: 'BLR-DC01'
+   cluster: 'Mgmt-Cluster'
+   vm_folder: 'Infra-VM'
+   datastore: 'iSCSI-1'
+   dumpfacts: True
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: "{{ vcenter_host }}"
+      username: "{{ vcsa_user }}"
+      password: "{{ vcsa_passwd }}"
+      validate_certs: False
+      name: "{{ vm_name }}"
+      template: Cent6-Minimal
+      datacenter: "{{ virtual_datacenter }}"
+      cluster: "{{ cluster }}"
+      folder: "{{ vm_folder }}"
+      disk:
+        - size_gb: 30
+          type: thin
+          autoselect_datastore: True
+      networks:
+        - name: 'Mgmt-NW'
+          ip: '192.168.109.140'
+          netmask: '255.255.255.0'
+          gateway: '192.168.109.1'
+          dns: '192.168.109.2'
+      hardware:
+                hotadd_cpu: True
+                hotadd_memory: True
+                memory_mb: "{{ VM_Mem }}"
+                num_cpus: "{{ VM_CPU }}"
+      state: poweredon
+      wait_for_ip_address: yes
