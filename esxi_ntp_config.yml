@@ -1,0 +1,46 @@
+---
+# This script will configure NTP server settings on all hosts in a given cluster.
+
+         - name: "Configure NTP on Esxi hosts"
+           hosts: localhost
+           connection: local
+           gather_facts: no
+           vars_prompt: 
+                  - name: "vcsa_host"
+                    prompt: "Enter hostname or IP address of the vCenter server"
+                    private: no
+                  - name: "vcsa_user"
+                    prompt: "Enter vcenter server username"
+                    private: no
+                  - name: "vcsa_passwd"
+                    prompt: "Enter vcenter password"
+                    private: yes
+            
+           vars:
+             cluster_name: 'Mgmt-Cluster'
+            
+           tasks:
+               - name: Manage NTP server configuration of an ESXi host
+                 vmware_host_ntp:
+                         hostname: "{{vcsa_host}}"
+                         username: "{{vcsa_user}}"
+                         password: "{{vcsa_passwd}}"
+                         cluster_name: "{{cluster_name}}"
+                         ntp_servers: 192.168.109.2
+                         validate_certs: False
+                         state: present
+
+               - name: Check NTP service status and start if stopped.
+                 vmware_host_service_manager:
+                         hostname: "{{vcsa_host}}"
+                         username: "{{vcsa_user}}"
+                         password: "{{vcsa_passwd}}"
+                         cluster_name: "{{cluster_name}}"
+                         validate_certs: False
+                         service_name: ntpd
+                         service_policy: on
+                         state: start
+
+
+
+   
