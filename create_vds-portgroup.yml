@@ -1,0 +1,41 @@
+---
+### This script is capable of creating portgroups on standard vswitch only
+    - name: Create Portgroups on a virtual switch
+      hosts: localhost
+      gather_facts: no
+      vars_prompt:
+         - name: "vcenter_host"
+           prompt: "Enter vcenter server name"
+           private: no
+         - name: "vcsa_user"
+           prompt: "Enter vCenter username"
+           private: no
+         - name: "vcsa_passwd"
+           prompt: "Enter vcenter password"
+           private: yes
+         - name: "vswitch_name"
+           prompt: "Enter Std vSwitch name where portgroups will be created"
+           private: no
+           
+      vars:
+         cluster: 'Mgmt-Cluster'
+              
+      tasks:
+            - name: Create portgroup on a Standard vSwitch
+              vmware_portgroup:
+               hostname: "{{ vcenter_host }}"
+               username: "{{ vcsa_user }}"
+               password: "{{ vcsa_passwd }}"
+               validate_certs: False
+               cluster_name: "{{cluster}}"
+               switch_name: "{{vswitch_name}}"
+               portgroup_name: test-pg
+               network_policy:
+                          forged_transmits: True
+                          mac_changes: True
+                          promiscuous_mode: True
+               teaming_policy:
+                          load_balance_policy: loadbalance_srcid
+                          notify_switches: True
+               state: present
+               vlan_id: 0
